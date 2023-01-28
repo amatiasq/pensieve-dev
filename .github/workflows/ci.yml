@@ -27,6 +27,12 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - name: Copy file
+        uses: canastro/copy-action@0.0.2
+        with:
+          source: "dist/index.html"
+          target: "dist/404.html"
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
