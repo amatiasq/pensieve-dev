@@ -7,7 +7,9 @@ import { useRepoFiles } from './useRepoFiles';
 export function Sidebar() {
   const repo = useActiveRepo();
   const files = createMemo(() => useRepoFiles(repo()));
-  const tree = createMemo(() => createTree(files(), '#'));
+  const tree = createMemo(() =>
+    createTree(files(), `${document.baseURI}${repo().path}#`)
+  );
 
   return (
     <aside class={styles.sidebar}>
