@@ -34,7 +34,7 @@ function RepositoryEditor() {
 function Homepage() {
   return (
     <div>
-      No repository selected <a href="/amatiasq/amatiasq.com">Wanna try one?</a>
+      No repository selected <a href="amatiasq/pensieve-dev">Wanna try one?</a>
     </div>
   );
 }
