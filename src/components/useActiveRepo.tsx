@@ -46,6 +46,11 @@ export function ProvideActiveRepo(props: ParentProps) {
 
 function getRepositoryFromUrl() {
   const url = new URL(location.href);
-  const [user, repo, ...params] = url.pathname.split('/').filter(Boolean);
+
+  const [user, repo] = url.pathname
+    .replace(/^\/pensieve-dev/, '')
+    .split('/')
+    .filter(Boolean);
+
   return user && repo ? new Repository(user, repo) : null;
 }
