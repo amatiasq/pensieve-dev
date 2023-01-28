@@ -1,12 +1,13 @@
 import { createMemo } from 'solid-js';
-import { Repository } from '../tools/Repository';
 import { createTree, PrintTree } from './PrintTree';
 import styles from './Sidebar.module.scss';
+import { useActiveRepo } from './useActiveRepo';
 import { useRepoFiles } from './useRepoFiles';
 
-export function Sidebar(props: { repo: Repository }) {
-  const files = useRepoFiles(props.repo);
-  const tree = createMemo(() => createTree(files, `${props.repo.path}/#`));
+export function Sidebar() {
+  const repo = useActiveRepo();
+  const files = createMemo(() => useRepoFiles(repo()));
+  const tree = createMemo(() => createTree(files(), `${repo().path}/#`));
 
   return (
     <aside class={styles.sidebar}>

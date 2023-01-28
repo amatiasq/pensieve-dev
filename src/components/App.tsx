@@ -1,29 +1,33 @@
-import { createSignal } from 'solid-js';
+import { Match, Switch } from 'solid-js';
 import styles from './App.module.css';
 import { Editor } from './Editor';
 import { Sidebar } from './Sidebar';
-import { useActiveRepo } from './useActiveRepo';
+import { ProvideActiveFile } from './useActiveFile';
+import { hasActiveRepo, ProvideActiveRepo } from './useActiveRepo';
 
 export function App() {
-  const repo = useActiveRepo();
-
-  if (!repo) {
-    return <Homepage />;
-  }
-
-  const [route, setRoute] = createSignal(location.hash.substring(1));
-
-  window.addEventListener('hashchange', () =>
-    setRoute(location.hash.substring(1))
-  );
-
-  console.log({ route: route() });
-
   return (
-    <div class={styles.root}>
-      <Sidebar repo={repo} />
-      <Editor route={route()} />
-    </div>
+    <ProvideActiveRepo>
+      <RepositoryEditor />
+    </ProvideActiveRepo>
+  );
+}
+
+function RepositoryEditor() {
+  return (
+    <Switch>
+      <Match when={!hasActiveRepo()}>
+        <Homepage />
+      </Match>
+      <Match when={hasActiveRepo()}>
+        <ProvideActiveFile>
+          <div class={styles.root}>
+            <Sidebar />
+            <Editor />
+          </div>
+        </ProvideActiveFile>
+      </Match>
+    </Switch>
   );
 }
 
