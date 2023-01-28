@@ -6,7 +6,7 @@ import { useRepoFiles } from './useRepoFiles';
 
 export function Sidebar() {
   const repo = useActiveRepo();
-  const root = () => `${document.baseURI}${repo().path}#`.replace(/\/\/+/, '/');
+  const root = () => `${document.baseURI}${repo().path.slice(1)}#`;
 
   const files = createMemo(() => useRepoFiles(repo()));
   const tree = createMemo(() => createTree(files(), root()));

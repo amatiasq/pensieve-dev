@@ -37,13 +37,13 @@ function Homepage() {
       No repository selected Wanna try one?
       <ul>
         <li>
-          <a href="amatiasq/pensieve-dev">The source of this app</a>
+          <a href="amatiasq/pensieve-dev/">The source of this app</a>
         </li>
         <li>
-          <a href="amatiasq/amatiasq.com">amatiasq.com</a>
+          <a href="amatiasq/amatiasq.com/">amatiasq.com</a>
         </li>
         <li>
-          <a href="solidjs/solid">solidjs</a>
+          <a href="solidjs/solid/">solidjs</a>
         </li>
       </ul>
     </div>
