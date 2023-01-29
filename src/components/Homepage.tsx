@@ -1,23 +1,21 @@
+import { css } from '@emotion/css';
+import { Center } from './atoms/Center';
+
+const style = css`
+  font-size: 2rem;
+
+  li {
+    list-style: '-  ';
+    margin-top: 2rem;
+  }
+`;
+
 export function Homepage() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        'justify-content': 'center',
-        'align-items': 'center',
-        height: '100vh',
-        'font-size': '2rem',
-      }}
-    >
-      <div>
+    <Center fullscreen>
+      <div class={style}>
         No repository selected Wanna try one?
-        <ul
-          style={{
-            display: 'flex',
-            'flex-direction': 'column',
-            gap: '1rem',
-          }}
-        >
+        <ul>
           <li>
             <a href="amatiasq/pensieve-dev/">The source of this app</a>
           </li>
@@ -29,6 +27,20 @@ export function Homepage() {
           </li>
         </ul>
       </div>
+    </Center>
+  );
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        'justify-content': 'center',
+        'align-items': 'center',
+        height: '100vh',
+        'font-size': '2rem',
+      }}
+    >
+      <div></div>
     </div>
   );
 }

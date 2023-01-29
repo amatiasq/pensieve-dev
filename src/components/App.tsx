@@ -1,10 +1,18 @@
+import { css } from '@emotion/css';
 import { Match, Switch } from 'solid-js';
-import styles from './App.module.css';
 import { Editor } from './Editor';
 import { Homepage } from './Homepage';
 import { Sidebar } from './Sidebar';
 import { ProvideActiveFile } from './useActiveFile';
 import { hasActiveRepo, ProvideActiveRepo } from './useActiveRepo';
+
+const styles = css`
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: 1fr;
+  background-color: #1c1c1c;
+`;
 
 export function App() {
   return (
@@ -22,7 +30,7 @@ function RepositoryEditor() {
       </Match>
       <Match when={hasActiveRepo()}>
         <ProvideActiveFile>
-          <div class={styles.root}>
+          <div class={styles}>
             <Sidebar />
             <Editor />
           </div>

@@ -42,7 +42,7 @@ export function createTree(files: string[], root: string) {
 }
 
 export function PrintTree(props: {
-  class: string;
+  class?: string;
   root: INode[];
   depth?: number;
 }) {

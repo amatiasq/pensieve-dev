@@ -7,7 +7,7 @@ export function useRepoFiles(repo: Repository) {
   const patchArray = (array: string[]) => Object.assign(array, { isCloning });
   type FileList = ReturnType<typeof patchArray>;
 
-  const [isCloning, setIsCloning] = createSignal(true);
+  const [isCloning, setIsCloning] = createSignal<boolean | null>(null);
   const [files, setFiles] = createStore<FileList>(patchArray([]));
 
   function setCleanFiles(value: string[]) {
@@ -15,17 +15,25 @@ export function useRepoFiles(repo: Repository) {
     return setFiles(patchArray(clean));
   }
 
-  repo.getFiles().then(setCleanFiles);
+  repo
+    .getFiles()
+    .then((files) =>
+      batch(() => {
+        if (isCloning() === null) setIsCloning(true);
+        setCleanFiles(files);
+      })
+    )
+    .catch(() => setIsCloning(true));
 
   new GitRepository(repo)
     .clone()
     .then(() => repo.getFiles())
-    .then((files) => {
+    .then((files) =>
       batch(() => {
         setIsCloning(false);
         setCleanFiles(files);
-      });
-    });
+      })
+    );
 
   return files;
 }
