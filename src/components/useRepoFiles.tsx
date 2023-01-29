@@ -1,13 +1,18 @@
+import { batch, createSignal } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { GitRepository } from '../tools/GitRepository';
 import { Repository } from '../tools/Repository';
 
 export function useRepoFiles(repo: Repository) {
-  const [files, setFiles] = createStore<string[]>([]);
+  const patchArray = (array: string[]) => Object.assign(array, { isCloning });
+  type FileList = ReturnType<typeof patchArray>;
+
+  const [isCloning, setIsCloning] = createSignal(true);
+  const [files, setFiles] = createStore<FileList>(patchArray([]));
 
   function setCleanFiles(value: string[]) {
     const clean = value.map((x) => x.replace(`${repo.path}/`, ''));
-    return setFiles(clean);
+    return setFiles(patchArray(clean));
   }
 
   repo.getFiles().then(setCleanFiles);
@@ -15,7 +20,12 @@ export function useRepoFiles(repo: Repository) {
   new GitRepository(repo)
     .clone()
     .then(() => repo.getFiles())
-    .then(setCleanFiles);
+    .then((files) => {
+      batch(() => {
+        setIsCloning(false);
+        setCleanFiles(files);
+      });
+    });
 
   return files;
 }

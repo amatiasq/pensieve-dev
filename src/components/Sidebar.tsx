@@ -1,4 +1,4 @@
-import { createMemo } from 'solid-js';
+import { createMemo, Show } from 'solid-js';
 import { createTree, PrintTree } from './PrintTree';
 import styles from './Sidebar.module.scss';
 import { useActiveRepo } from './useActiveRepo';
@@ -11,9 +11,13 @@ export function Sidebar() {
   const files = createMemo(() => useRepoFiles(repo()));
   const tree = createMemo(() => createTree(files(), root()));
 
+  const isLoading = () => files().length == 0 && files().isCloning();
+
   return (
     <aside class={styles.sidebar}>
       <PrintTree class={styles.tree} root={tree()} />
+
+      <Show when={isLoading()}>Clone in progress...</Show>
     </aside>
   );
 }
