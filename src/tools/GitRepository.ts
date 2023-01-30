@@ -1,6 +1,6 @@
 import { mkdirRecursive } from './fs';
 import { clone } from './git';
-import { Repository } from './Repository';
+import type { Repository } from './Repository';
 
 export class GitRepository {
   get user() {
