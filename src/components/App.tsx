@@ -5,6 +5,7 @@ import { Homepage } from './Homepage';
 import { Sidebar } from './Sidebar';
 import { ProvideActiveFile } from './useActiveFile';
 import { hasActiveRepo, ProvideActiveRepo } from './useActiveRepo';
+import { useSettingsFile } from './useSettingsFile';
 
 const styles = css`
   height: 100vh;
@@ -17,25 +18,27 @@ const styles = css`
 export function App() {
   return (
     <ProvideActiveRepo>
-      <RepositoryEditor />
+      <Switch>
+        <Match when={!hasActiveRepo()}>
+          <Homepage />
+        </Match>
+        <Match when={hasActiveRepo()}>
+          <ProvideActiveFile>
+            <RepositoryEditor />
+          </ProvideActiveFile>
+        </Match>
+      </Switch>
     </ProvideActiveRepo>
   );
 }
 
 function RepositoryEditor() {
+  useSettingsFile();
+
   return (
-    <Switch>
-      <Match when={!hasActiveRepo()}>
-        <Homepage />
-      </Match>
-      <Match when={hasActiveRepo()}>
-        <ProvideActiveFile>
-          <div class={styles}>
-            <Sidebar />
-            <Editor />
-          </div>
-        </ProvideActiveFile>
-      </Match>
-    </Switch>
+    <div class={styles}>
+      <Sidebar />
+      <Editor />
+    </div>
   );
 }

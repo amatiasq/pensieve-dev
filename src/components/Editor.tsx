@@ -14,5 +14,15 @@ export function Editor(props: { readonly?: boolean }) {
     else setContent('No file selected');
   });
 
-  return <MonacoEditor filename={route() || 'none'} content={content()} />;
+  return (
+    <MonacoEditor
+      filename={route() || 'none'}
+      content={content()}
+      onChange={(x) => {
+        const file = route();
+        if (!file) return;
+        repo().writeFile(file, x);
+      }}
+    />
+  );
 }

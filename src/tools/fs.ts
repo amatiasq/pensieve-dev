@@ -3,6 +3,8 @@ import FS from '@isomorphic-git/lightning-fs';
 export const gitFs = new FS('fs');
 const fs = gitFs.promises;
 
+const log = (...args: any) => console.log('[FS]', ...args);
+
 export async function mkdirRecursive(path: string) {
   for (
     let index = path.indexOf('/', 1);
@@ -56,7 +58,7 @@ export async function fileExists(path: string) {
 }
 
 export async function getFileContent(path: string) {
-  console.log('READ', path);
+  log('READ', path);
   if (!(await fileExists(path))) return null;
 
   const content = await fs.readFile(path, 'utf8');
@@ -64,4 +66,9 @@ export async function getFileContent(path: string) {
   return typeof content == 'string'
     ? content
     : new TextDecoder().decode(content);
+}
+
+export async function writeFileContent(path: string, content: string) {
+  log('WRITE', path);
+  return fs.writeFile(path, content, 'utf8');
 }

@@ -1,5 +1,12 @@
+import { dirname } from '@isomorphic-git/lightning-fs/src/path';
 import { Accessor, batch, createSignal, Setter } from 'solid-js';
-import { fileExists, getAllFiles, getFileContent } from './fs';
+import {
+  fileExists,
+  getAllFiles,
+  getFileContent,
+  mkdirRecursive,
+  writeFileContent,
+} from './fs';
 import { GitRepository } from './GitRepository';
 
 const join = (...paths: string[]) => paths.join('/').replace(/\/+/g, '/');
@@ -36,6 +43,24 @@ export class Repository {
 
   getFileContent(path: string) {
     return getFileContent(join(this.path, path));
+  }
+
+  async writeFile(path: string, content: string) {
+    await mkdirRecursive(dirname(path));
+    return writeFileContent(join(this.path, path), content);
+  }
+
+  async getFileAsBlob(path: string, type: 'text/plain' | 'text/javascript') {
+    const content = await getFileContent(join(this.path, path));
+    return new Blob([content!], { type });
+  }
+
+  async importFile(path: string) {
+    const blob = await this.getFileAsBlob(path, 'text/javascript');
+    const url = URL.createObjectURL(blob);
+    const module = await import(url);
+    URL.revokeObjectURL(url);
+    return module;
   }
 }
 

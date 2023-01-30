@@ -9,6 +9,7 @@ export function MonacoEditor(props: {
   filename: string;
   content?: string | null;
   readonly?: boolean;
+  onChange: (content: string) => void;
 }) {
   const language = createMemo(() => {
     const extension = props.filename.split('.').pop()!;
@@ -22,6 +23,10 @@ export function MonacoEditor(props: {
     () => {
       if (editor) editor.dispose();
       editor = initializeMonaco();
+
+      editor
+        .getModel()
+        ?.onDidChangeContent(() => props.onChange?.(editor!.getValue()));
     },
     { defer: true }
   );
