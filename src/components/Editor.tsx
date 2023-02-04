@@ -1,11 +1,9 @@
 import { createEffect, createSignal } from 'solid-js';
 import { GitRepository } from '../tools/GitRepository';
 import { Scheduler } from '../tools/Scheduler';
-import { MonacoEditor } from './MonacoEditor';
+import { Content, MonacoEditor } from './MonacoEditor';
 import { useActiveFile } from './useActiveFile';
 import { useActiveRepo } from './useActiveRepo';
-
-type Content = string | null;
 
 export function Editor(props: { readonly?: boolean }) {
   const repo = useActiveRepo();
@@ -60,20 +58,13 @@ export function Editor(props: { readonly?: boolean }) {
 
     var git = new GitRepository(repo());
 
-    console.log('[commit.COMMIT]', content());
+    console.log('[commit.commt]', content());
+
     await git.commit('Automatic commit from Pensieve 2.0', {
       author: 'Pensieve',
     });
 
-    // const log = await git.log();
-    // console.log('[commit.LOG]', log);
-
-    console.log('[commit]', { status: await git.status() });
-    console.log('[commit]', { add: await git.add() });
-    console.log('[commit]', { status2: await git.status() });
-
-    console.log('[commit]', content());
-
-    console.log('commit', { push: await git.push() });
+    console.log('commit.add', { add: await git.add() });
+    console.log('commit.push', { push: await git.push() });
   }
 }

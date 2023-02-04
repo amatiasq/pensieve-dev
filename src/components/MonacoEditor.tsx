@@ -11,6 +11,22 @@ import {
   untrack,
 } from 'solid-js';
 
+export type Content = string | null | undefined;
+
+function memory<T>(...init: T[]) {
+  let memory = [...init];
+
+  return {
+    add(value: T) {
+      memory = [value, ...new Set(memory.slice(0, 5))];
+      return memory;
+    },
+    has(value: T) {
+      return memory.includes(value);
+    },
+  };
+}
+
 export function MonacoEditor(props: {
   filename: string;
   content?: string | null;
@@ -23,7 +39,8 @@ export function MonacoEditor(props: {
   });
 
   const element = (<div />) as HTMLDivElement;
-  let memory = [] as string[];
+  // const incoming = memory<Content>(props.content ?? '');
+  const outgoing = memory<Content>();
   let editor: editor.IStandaloneCodeEditor | null = null;
 
   createEffect(
@@ -39,11 +56,9 @@ export function MonacoEditor(props: {
   const owner = getOwner();
 
   function reportChangeInContent() {
-    memory = [
-      // multiline, prettier don't inline this, thanks
-      props.content ?? '',
-      ...new Set(memory.slice(0, 5)),
-    ];
+    if (!editor) return;
+
+    outgoing.add(editor.getValue());
 
     runWithOwner(owner!, () => {
       props.onChange?.(editor!.getValue());
@@ -53,7 +68,7 @@ export function MonacoEditor(props: {
   createEffect(() => {
     console.log('[MonacoEditor.recived]', props.content);
 
-    if (!editor) return;
+    if (!editor || outgoing.has(props.content)) return;
 
     if (props.content !== editor.getValue())
       editor.setValue(props.content || '');

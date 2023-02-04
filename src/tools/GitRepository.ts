@@ -1,8 +1,11 @@
+import { AuthCallback } from 'isomorphic-git';
 import { mkdirRecursive } from './fs';
 import { add, clone, commit, log, push, status } from './git';
 import type { Repository } from './Repository';
 
 export class GitRepository {
+  #onAuth: AuthCallback;
+
   get user() {
     return this.repo.user;
   }
@@ -11,7 +14,9 @@ export class GitRepository {
     return this.repo.path;
   }
 
-  constructor(public readonly repo: Repository) {}
+  constructor(public readonly repo: Repository) {
+    this.#onAuth = () => getCredentials(this.user) ?? { cancel: true };
+  }
 
   async clone() {
     console.log('Create dir', this.path);
@@ -23,7 +28,7 @@ export class GitRepository {
       url: `https://github.com${this.path}`,
       singleBranch: true,
       depth: 1,
-      onAuth: () => getCredentials(this.user) ?? { cancel: true },
+      onAuth: this.#onAuth,
     });
 
     console.log('Done', this.path);
@@ -53,7 +58,21 @@ export class GitRepository {
     return push({
       dir: this.path,
       remote: 'origin',
-      onAuth: () => getCredentials(this.user) ?? { cancel: true },
+      onAuth: this.#onAuth,
+      onAuthFailure: () => {
+        console.log('Auth failed');
+        localStorage.removeItem('pensieve.auth');
+        return this.push();
+      },
+      onAuthSuccess: () => {
+        console.log('Auth success');
+      },
+      onMessage: (message) => {
+        console.log('Push message', message);
+      },
+      onProgress: (progress) => {
+        console.log('Push progress', progress);
+      },
     });
   }
 }
