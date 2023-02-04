@@ -3,7 +3,13 @@ import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 
 import type { editor } from 'monaco-editor';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { createEffect, createMemo, untrack } from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  getOwner,
+  runWithOwner,
+  untrack,
+} from 'solid-js';
 
 export function MonacoEditor(props: {
   filename: string;
@@ -17,6 +23,7 @@ export function MonacoEditor(props: {
   });
 
   const element = (<div />) as HTMLDivElement;
+  let memory = [] as string[];
   let editor: editor.IStandaloneCodeEditor | null = null;
 
   createEffect(
@@ -24,15 +31,32 @@ export function MonacoEditor(props: {
       if (editor) editor.dispose();
       editor = initializeMonaco();
 
-      editor
-        .getModel()
-        ?.onDidChangeContent(() => props.onChange?.(editor!.getValue()));
+      editor.getModel()?.onDidChangeContent(reportChangeInContent);
     },
     { defer: true }
   );
 
+  const owner = getOwner();
+
+  function reportChangeInContent() {
+    memory = [
+      // multiline, prettier don't inline this, thanks
+      props.content ?? '',
+      ...new Set(memory.slice(0, 5)),
+    ];
+
+    runWithOwner(owner!, () => {
+      props.onChange?.(editor!.getValue());
+    });
+  }
+
   createEffect(() => {
-    editor?.setValue(props.content || '');
+    console.log('[MonacoEditor.recived]', props.content);
+
+    if (!editor) return;
+
+    if (props.content !== editor.getValue())
+      editor.setValue(props.content || '');
   });
 
   return element;

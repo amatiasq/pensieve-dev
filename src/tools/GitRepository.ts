@@ -1,5 +1,5 @@
 import { mkdirRecursive } from './fs';
-import { clone } from './git';
+import { add, clone, commit, log, push, status } from './git';
 import type { Repository } from './Repository';
 
 export class GitRepository {
@@ -27,6 +27,34 @@ export class GitRepository {
     });
 
     console.log('Done', this.path);
+  }
+
+  log() {
+    return log({ dir: this.path });
+  }
+
+  status() {
+    return status({ dir: this.path, filepath: '.' });
+  }
+
+  add() {
+    return add({ dir: this.path, filepath: '.' });
+  }
+
+  commit(message: string, { author }: { author?: string } = {}) {
+    return commit({
+      dir: this.path,
+      message,
+      author: { name: author },
+    });
+  }
+
+  push() {
+    return push({
+      dir: this.path,
+      remote: 'origin',
+      onAuth: () => getCredentials(this.user) ?? { cancel: true },
+    });
   }
 }
 

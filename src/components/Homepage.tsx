@@ -5,12 +5,24 @@ const style = css`
   font-size: 2rem;
 
   li {
-    list-style: '-  ';
+    list-style: '·  ';
     margin-top: 2rem;
+    margin-left: -1.3rem;
+  }
+
+  input {
+    font-size: inherit;
+    margin: 20px 0;
+    width: 100%;
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 `;
 
 export function Homepage() {
+  let input: HTMLInputElement;
+
   return (
     <Center fullscreen>
       <div class={style}>
@@ -26,21 +38,16 @@ export function Homepage() {
             <a href="solidjs/solid/">solidjs</a>
           </li>
         </ul>
+        <label>Or a repo you have write access to?</label>
+        <form onSubmit={submit}>
+          <input ref={input} type="text" />
+        </form>
       </div>
     </Center>
   );
 
-  return (
-    <div
-      style={{
-        display: 'flex',
-        'justify-content': 'center',
-        'align-items': 'center',
-        height: '100vh',
-        'font-size': '2rem',
-      }}
-    >
-      <div></div>
-    </div>
-  );
+  function submit(event: Event) {
+    location.href = input.value;
+    event.preventDefault();
+  }
 }
