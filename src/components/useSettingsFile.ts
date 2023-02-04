@@ -3,7 +3,7 @@ import { useActiveRepo } from './useActiveRepo';
 
 interface Settings {}
 
-const SETTINGS_FILES = ['pensieve.js'];
+const SETTINGS_FILES = ['pensieve.js', 'pensieve.ts'];
 
 export function useSettingsFile() {
   const repo = useActiveRepo();

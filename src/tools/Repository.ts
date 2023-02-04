@@ -58,7 +58,7 @@ export class Repository {
   async importFile(path: string) {
     const blob = await this.getFileAsBlob(path, 'text/javascript');
     const url = URL.createObjectURL(blob);
-    const module = await import(url);
+    const module = await import(/* @vite-ignore */ url);
     URL.revokeObjectURL(url);
     return module;
   }
