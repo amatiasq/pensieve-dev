@@ -58,13 +58,13 @@ export function Editor(props: { readonly?: boolean }) {
 
     var git = new GitRepository(repo());
 
-    console.log('[commit.commt]', content());
+    console.log('[commit.commit]', content());
 
     await git.commit('Automatic commit from Pensieve 2.0', {
       author: 'Pensieve',
     });
 
-    console.log('commit.add', { add: await git.add() });
-    console.log('commit.push', { push: await git.push() });
+    console.log('commit.add', await git.add());
+    console.log('commit.push', await git.push());
   }
 }
