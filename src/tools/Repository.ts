@@ -64,7 +64,7 @@ export class Repository {
   }
 }
 
-function initialize(
+async function initialize(
   repo: Repository,
   isCloning: Accessor<boolean | null>,
   setIsCloning: Setter<boolean | null>,
@@ -87,13 +87,20 @@ function initialize(
     )
     .catch(() => setIsCloning(true));
 
-  new GitRepository(repo)
-    .clone()
-    .then(() => repo.getFiles())
-    .then((files) =>
-      batch(() => {
-        setIsCloning(false);
-        setCleanFiles(files);
-      })
-    );
+  const git = new GitRepository(repo);
+
+  if (await repo.hasFile('.git/HEAD')) {
+    console.log('PULL');
+    await git.pull();
+  } else {
+    console.log('CLONE');
+    await git.clone();
+  }
+
+  const files = await repo.getFiles();
+
+  batch(() => {
+    setIsCloning(false);
+    setCleanFiles(files);
+  });
 }

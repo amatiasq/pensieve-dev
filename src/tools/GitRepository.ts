@@ -1,6 +1,6 @@
-import { AuthCallback } from 'isomorphic-git';
+import { AuthCallback, PushResult } from 'isomorphic-git';
 import { mkdirRecursive } from './fs';
-import { add, clone, commit, log, push, status } from './git';
+import { add, clone, commit, log, pull, push, status } from './git';
 import type { Repository } from './Repository';
 
 export class GitRepository {
@@ -54,7 +54,11 @@ export class GitRepository {
     });
   }
 
-  push() {
+  pull() {
+    return pull({ dir: this.path });
+  }
+
+  push(): Promise<PushResult> {
     return push({
       dir: this.path,
       remote: 'origin',

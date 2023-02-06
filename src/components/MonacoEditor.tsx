@@ -18,7 +18,7 @@ function memory<T>(...init: T[]) {
 
   return {
     add(value: T) {
-      memory = [value, ...new Set(memory.slice(0, 5))];
+      memory = [value, memory[0]]; // ...new Set(memory.slice(0, 5))];
       return memory;
     },
     has(value: T) {
@@ -66,7 +66,7 @@ export function MonacoEditor(props: {
   }
 
   createEffect(() => {
-    console.log('[MonacoEditor.recived]', props.content);
+    // console.log('[MonacoEditor.recived]', props.content);
 
     if (!editor || outgoing.has(props.content)) return;
 
