@@ -1,12 +1,12 @@
 import { createEffect, createSignal } from 'solid-js';
-import { useActiveRepo } from './useActiveRepo';
+import { useRepoState } from './ActiveRepoProvider';
 
 interface Settings {}
 
 const SETTINGS_FILES = ['pensieve.js', 'pensieve.ts'];
 
 export function useSettingsFile() {
-  const repo = useActiveRepo();
+  const repo = useRepoState();
 
   const [settings, setSettings] = createSignal<Settings>({});
 

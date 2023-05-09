@@ -1,50 +1,37 @@
-import { css } from '@emotion/css';
-import { Center } from './atoms/Center';
-
-const style = css`
-  font-size: 2rem;
-
-  li {
-    list-style: '·  ';
-    margin-top: 2rem;
-    margin-left: -1.3rem;
-  }
-
-  input {
-    font-size: inherit;
-    margin: 20px 0;
-    width: 100%;
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-`;
+import { SlInput } from '@shoelace-style/shoelace';
 
 export function Homepage() {
-  let input: HTMLInputElement;
+  let input!: SlInput;
 
   return (
-    <Center fullscreen>
-      <div class={style}>
-        No repository selected Wanna try one?
-        <ul>
-          <li>
-            <a href="amatiasq/pensieve-dev/">The source of this app</a>
-          </li>
-          <li>
-            <a href="amatiasq/amatiasq.com/">amatiasq.com</a>
-          </li>
-          <li>
-            <a href="solidjs/solid/">solidjs</a>
-          </li>
-        </ul>
-        <label>Or a repo you have write access to?</label>
+    <sl-dialog
+      label="No repository selected Wanna try one?"
+      open
+      on:sl-request-close={preventClose}
+    >
+      <nav>
+        <a href="amatiasq/pensieve-dev/">
+          <sl-menu-item>The source of this app</sl-menu-item>
+        </a>
+        <a href="amatiasq/amatiasq.com/">
+          <sl-menu-item>amatiasq.com</sl-menu-item>
+        </a>
+        <a href="solidjs/solid/">
+          <sl-menu-item>Solid JS</sl-menu-item>
+        </a>
+
+        <sl-divider></sl-divider>
+
         <form onSubmit={submit}>
-          <input ref={input} type="text" />
+          <sl-input ref={input}></sl-input>
         </form>
-      </div>
-    </Center>
+      </nav>
+    </sl-dialog>
   );
+
+  function preventClose(event: any) {
+    event.preventDefault();
+  }
 
   function submit(event: Event) {
     location.href = input.value;

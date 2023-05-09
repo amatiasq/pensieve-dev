@@ -7,12 +7,11 @@ import {
 } from 'solid-js';
 import { Repository } from '../tools/Repository';
 
-const ActiveRepoProvider = createContext<Accessor<Repository | null>>(
-  () => null
-);
+export type RepositoryState = 'none' | 'clonning' | 'ready';
+const provider = createContext<Accessor<Repository | null>>(() => null);
 
-export function useActiveRepo() {
-  const repo = useContext(ActiveRepoProvider);
+export function useRepoState() {
+  const repo = useContext(provider);
 
   return () => {
     const value = repo();
@@ -25,23 +24,25 @@ export function useActiveRepo() {
   };
 }
 
-export function hasActiveRepo() {
-  const repo = useContext(ActiveRepoProvider);
-  return repo() != null;
+export function hasActiveRepo(): Accessor<RepositoryState> {
+  const repo = useContext(provider);
+
+  return () => {
+    const value = repo();
+    if (value == null) return 'none';
+    if (value.isCloning()) return 'clonning';
+    return 'ready';
+  };
 }
 
-export function ProvideActiveRepo(props: ParentProps) {
+export function ActiveRepoProvider(props: ParentProps) {
   const [repo, setRepo] = createSignal(getRepositoryFromUrl());
 
   window.addEventListener('locationchange', () =>
     setRepo(getRepositoryFromUrl())
   );
 
-  return (
-    <ActiveRepoProvider.Provider value={repo}>
-      {props.children}
-    </ActiveRepoProvider.Provider>
-  );
+  return <provider.Provider value={repo}>{props.children}</provider.Provider>;
 }
 
 function getRepositoryFromUrl() {

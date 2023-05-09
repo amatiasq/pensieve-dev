@@ -1,11 +1,10 @@
 /* @refresh reload */
 import { render } from 'solid-js/web';
-
 import { App } from './components/App';
 import './index.css';
+import { rootClassName } from './shoelace';
 
-render(
-  () => <App />,
+const root = document.getElementById('root')!;
+root.classList.add(rootClassName);
 
-  document.getElementById('root') as HTMLElement
-);
+render(() => <App />, root);

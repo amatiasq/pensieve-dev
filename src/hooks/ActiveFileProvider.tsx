@@ -6,22 +6,18 @@ import {
   useContext,
 } from 'solid-js';
 
-const ActiveFileProvider = createContext<Accessor<string | null>>(() => null);
+const provider = createContext<Accessor<string | null>>(() => null);
 
 export function useActiveFile() {
-  return useContext(ActiveFileProvider);
+  return useContext(provider);
 }
 
-export function ProvideActiveFile(props: ParentProps) {
+export function ActiveFileProvider(props: ParentProps) {
   const [route, setRoute] = createSignal(location.hash.substring(1));
 
   window.addEventListener('hashchange', () =>
     setRoute(location.hash.substring(1))
   );
 
-  return (
-    <ActiveFileProvider.Provider value={route}>
-      {props.children}
-    </ActiveFileProvider.Provider>
-  );
+  return <provider.Provider value={route}>{props.children}</provider.Provider>;
 }
