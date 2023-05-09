@@ -1,9 +1,9 @@
 import { Match, Switch } from 'solid-js';
+import { FixedDialog } from '../atoms/FixedDialog';
 import { ActiveFileProvider } from '../hooks/ActiveFileProvider';
-import { ActiveRepoProvider, hasActiveRepo } from '../hooks/ActiveRepoProvider';
-import { useSettingsFile } from '../hooks/useSettingsFile';
+import { ActiveRepoProvider, useActiveRepo } from '../hooks/ActiveRepoProvider';
 import { FileTree } from './FileTree';
-import { Homepage } from './Homepage';
+import { Landing } from './Landing';
 
 export function App() {
   return (
@@ -14,32 +14,27 @@ export function App() {
 }
 
 function RepositoryLoader() {
-  const state = hasActiveRepo();
+  const repo = useActiveRepo();
 
   return (
-    <Switch>
-      <Match when={state() === 'none'}>
-        <Homepage />
+    <Switch fallback={<RepositoryEditor />}>
+      <Match when={repo() === null}>
+        <Landing />
       </Match>
-      <Match when={state() === 'clonning'}>
-        <div>Clonning</div>
-      </Match>
-      <Match when={state() === 'ready'}>
-        <ActiveFileProvider>
-          <RepositoryEditor />
-        </ActiveFileProvider>
+      <Match when={repo().isCloning()}>
+        <FixedDialog header="Clonning">Git clone in progress...</FixedDialog>
       </Match>
     </Switch>
   );
 }
 
 function RepositoryEditor() {
-  useSettingsFile();
-
   return (
-    <sl-split-panel style="flex: 1">
-      <FileTree slot="start" />
-      <div slot="end">End</div>
-    </sl-split-panel>
+    <ActiveFileProvider>
+      <sl-split-panel style="flex: 1">
+        <FileTree slot="start" />
+        <div slot="end">End</div>
+      </sl-split-panel>
+    </ActiveFileProvider>
   );
 }

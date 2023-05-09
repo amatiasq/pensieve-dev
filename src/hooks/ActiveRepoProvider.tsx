@@ -7,10 +7,10 @@ import {
 } from 'solid-js';
 import { Repository } from '../tools/Repository';
 
-export type RepositoryState = 'none' | 'clonning' | 'ready';
+export type RepositoryStatus = 'none' | 'clonning' | 'ready';
 const provider = createContext<Accessor<Repository | null>>(() => null);
 
-export function useRepoState() {
+export function useActiveRepo() {
   const repo = useContext(provider);
 
   return () => {
@@ -21,17 +21,6 @@ export function useRepoState() {
     }
 
     return value;
-  };
-}
-
-export function hasActiveRepo(): Accessor<RepositoryState> {
-  const repo = useContext(provider);
-
-  return () => {
-    const value = repo();
-    if (value == null) return 'none';
-    if (value.isCloning()) return 'clonning';
-    return 'ready';
   };
 }
 

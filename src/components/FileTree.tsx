@@ -1,6 +1,14 @@
-export function FileTree(props: { slot?: string }) {
+import { useActiveRepo } from '../hooks/ActiveRepoProvider';
+import { useSettingsFile } from '../hooks/useSettingsFile';
+
+export function FileTree(props: {}) {
+  const repo = useActiveRepo();
+  const settings = useSettingsFile();
+
+  repo().files();
+
   return (
-    <sl-tree slot={props.slot} selection="leaf">
+    <sl-tree selection="leaf">
       <sl-tree-item>
         Item 1
         <sl-tree-item>

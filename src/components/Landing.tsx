@@ -1,14 +1,11 @@
 import { SlInput } from '@shoelace-style/shoelace';
+import { FixedDialog } from '../atoms/FixedDialog';
 
-export function Homepage() {
+export function Landing() {
   let input!: SlInput;
 
   return (
-    <sl-dialog
-      label="No repository selected Wanna try one?"
-      open
-      on:sl-request-close={preventClose}
-    >
+    <FixedDialog header="No repository selected Wanna try one?">
       <nav>
         <a href="amatiasq/pensieve-dev/">
           <sl-menu-item>The source of this app</sl-menu-item>
@@ -23,15 +20,14 @@ export function Homepage() {
         <sl-divider></sl-divider>
 
         <form onSubmit={submit}>
-          <sl-input ref={input}></sl-input>
+          <sl-input
+            ref={input}
+            label="Or type a Github username/repository below:"
+          ></sl-input>
         </form>
       </nav>
-    </sl-dialog>
+    </FixedDialog>
   );
-
-  function preventClose(event: any) {
-    event.preventDefault();
-  }
 
   function submit(event: Event) {
     location.href = input.value;

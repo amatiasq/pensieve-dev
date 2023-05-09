@@ -91,7 +91,7 @@ async function initialize(
 
   if (await repo.hasFile('.git/HEAD')) {
     console.log('PULL');
-    await git.pull();
+    // await git.pull();
   } else {
     console.log('CLONE');
     await git.clone();
