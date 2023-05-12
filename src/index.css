@@ -30,3 +30,35 @@ a {
 a:not(:hover) {
   text-decoration: none;
 }
+
+
+/* custom styles */
+
+aside {
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+aside sl-tree {
+  overflow: auto;
+}
+
+aside sl-tree-item a:hover {
+  text-decoration: none;
+}
+
+aside sl-tree-item:hover:has(> a)::part(item) {
+  background-color: #27272b99;
+}
+
+aside sl-tree-item:has(sl-tree-item[selected])::part(item) {
+  background-color: #27272b;
+}
+
+aside [role=search]::part(base) {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+}

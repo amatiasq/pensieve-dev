@@ -10,6 +10,18 @@ import { Repository } from '../tools/Repository';
 export type RepositoryStatus = 'none' | 'clonning' | 'ready';
 const provider = createContext<Accessor<Repository | null>>(() => null);
 
+type RepositoryState = 'none' | 'clonning' | 'ready';
+
+export function repoStatus(): Accessor<RepositoryState> {
+  const repo = useContext(provider);
+
+  return () => {
+    const value = repo();
+    if (value == null) return 'none';
+    if (value.isCloning()) return 'clonning';
+    return 'ready';
+  };
+}
 export function useActiveRepo() {
   const repo = useContext(provider);
 
