@@ -1,9 +1,10 @@
 import { Match, Switch } from 'solid-js';
 import { FixedDialog } from '../atoms/FixedDialog';
-import { ActiveFileProvider } from '../hooks/ActiveFileProvider';
+import { ActiveFileProvider, useActiveFile } from '../hooks/ActiveFileProvider';
 import { ActiveRepoProvider, repoStatus } from '../hooks/ActiveRepoProvider';
 import { FileTree } from './FileTree';
 import { Landing } from './Landing';
+import { MonacoEditor } from './MonacoEditor';
 
 export function App() {
   return (
@@ -36,8 +37,48 @@ function RepositoryEditor() {
           <sl-input role="search" placeholder="Search"></sl-input>
           <FileTree />
         </aside>
-        <div slot="end">End</div>
+        <EditActiveFile slot="end" />
       </sl-split-panel>
     </ActiveFileProvider>
   );
 }
+
+function EditActiveFile(props: { slot?: string }) {
+  const file = useActiveFile();
+  return (
+    <MonacoEditor filename={file()!} onChange={(x) => console.log('AAAA', x)} />
+  );
+}
+//   const file = useActiveFile();
+//   const router = new Router();
+
+//   // const [note, { loading, draft }] = useNote(noteId);
+//   // const [content, setContent] = useNoteContent(noteId);
+
+//   // if (loading) {
+//   //   return <Loader />;
+//   // }
+
+//   if (!file()) {
+//     console.error(`Note ${file} not found`);
+//     router.goRoot();
+//     return null;
+//   }
+
+//   return (
+//     <Editor
+//       key={file()!}
+//       title={file()!}
+//       content={file()!}
+//       saveOnNavigation
+//       onChange={(x) => console.log('CHANGE', x)}
+//       onSave={(x) => console.log('SAVE', x)}
+//       // key={note.id}
+//       // title={note.title}
+//       // content={content}
+//       // saveOnNavigation
+//       // onChange={draft}
+//       // onSave={setContent}
+//     />
+//   );
+// }

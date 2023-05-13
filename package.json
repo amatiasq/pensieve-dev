@@ -19,8 +19,11 @@
     "vite-plugin-solid": "^2.5.0"
   },
   "dependencies": {
+    "@amatiasq/emitter": "^4.1.2",
+    "@amatiasq/scheduler": "^3.0.0",
     "@isomorphic-git/lightning-fs": "^4.6.0",
     "monaco-editor": "^0.34.1",
+    "rxjs": "^7.8.1",
     "solid-js": "^1.6.6"
   }
 }
