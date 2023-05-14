@@ -62,3 +62,8 @@ aside [role=search]::part(base) {
   border-right: none;
   border-radius: 0;
 }
+
+#editor, #editor > div {
+  height: 100vh;
+  width: 100%;
+}

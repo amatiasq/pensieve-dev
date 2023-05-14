@@ -1,15 +1,10 @@
-import 'monaco-editor/esm/vs/basic-languages/monaco.contribution';
-import 'monaco-editor/esm/vs/language/json/monaco.contribution';
+// import 'monaco-editor/esm/vs/basic-languages/monaco.contribution';
+// import 'monaco-editor/esm/vs/language/json/monaco.contribution';
+// import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import * as monaco from 'monaco-editor';
+import { createMemo } from 'solid-js';
 
-import type { editor } from 'monaco-editor';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import {
-  createEffect,
-  createMemo,
-  getOwner,
-  runWithOwner,
-  untrack,
-} from 'solid-js';
+// import type { editor } from 'monaco-editor';
 
 export type Content = string | null | undefined;
 
@@ -33,62 +28,91 @@ export function MonacoEditor(props: {
   readonly?: boolean;
   onChange: (content: string) => void;
 }) {
-  const language = createMemo(() => {
-    const extension = props.filename.split('.').pop()!;
-    return getLanguageFor(`.${extension}`) || 'markdown';
+  const element = (<div />) as HTMLDivElement;
+
+  const content = () => props.filename;
+  const lines = createMemo(() => content()?.split('\n').length ?? 0);
+
+  const editor = monaco.editor.create(element, {
+    value: props.filename,
+    language: 'typescript',
+    automaticLayout: true,
+    contextmenu: false,
+    renderLineHighlight: 'none',
+    // theme: 'pensieve',
+    theme: 'vs-dark',
+    'semanticHighlighting.enabled': true,
+    minimap: { enabled: lines() > 100 },
+    readOnly: props.readonly,
+    // renderIndentGuides,
+    // rulers,
+    // tabSize,
+    // wordBasedSuggestions: isMarkdown ? false : true,
+    // wordWrap: wordWrap ? 'on' : 'off',
   });
 
-  const element = (<div />) as HTMLDivElement;
-  // const incoming = memory<Content>(props.content ?? '');
-  const outgoing = memory<Content>();
-  let editor: editor.IStandaloneCodeEditor | null = null;
-
-  createEffect(
-    () => {
-      if (editor) editor.dispose();
-      editor = initializeMonaco();
-
-      editor.getModel()?.onDidChangeContent(reportChangeInContent);
-    },
-    { defer: true }
-  );
-
-  const owner = getOwner();
-
-  function reportChangeInContent() {
-    if (!editor) return;
-
-    outgoing.add(editor.getValue());
-
-    runWithOwner(owner!, () => {
-      props.onChange?.(editor!.getValue());
-    });
-  }
-
-  createEffect(() => {
-    // console.log('[MonacoEditor.recived]', props.content);
-
-    if (!editor || outgoing.has(props.content)) return;
-
-    if (props.content !== editor.getValue())
-      editor.setValue(props.content || '');
+  editor.onDidChangeModelContent(() => {
+    props.onChange(editor.getValue());
   });
 
   return element;
 
-  function initializeMonaco() {
-    return monaco.editor.create(element, {
-      value: untrack(() => props.content) || '',
-      theme: 'vs-dark',
-      readOnly: props.readonly || false,
-      wordBasedSuggestions: language() === 'markdown' ? false : true,
-      language: language(),
-      rulers: [80, 120],
-      tabSize: 2,
-      'semanticHighlighting.enabled': true,
-      wordWrap: true ? 'on' : 'off',
-    });
-  }
+  // const language = createMemo(() => {
+  //   const extension = props.filename.split('.').pop()!;
+  //   return getLanguageFor(`.${extension}`) || 'markdown';
+  // });
+
+  // const element = (<div />) as HTMLDivElement;
+  // // const incoming = memory<Content>(props.content ?? '');
+  // const outgoing = memory<Content>();
+  // let editor: editor.IStandaloneCodeEditor | null = null;
+
+  // createEffect(
+  //   () => {
+  //     if (editor) editor.dispose();
+  //     editor = initializeMonaco();
+
+  //     editor.getModel()?.onDidChangeContent(reportChangeInContent);
+  //   },
+  //   { defer: true }
+  // );
+
+  // const owner = getOwner();
+
+  // function reportChangeInContent() {
+  //   if (!editor) return;
+
+  //   outgoing.add(editor.getValue());
+
+  //   runWithOwner(owner!, () => {
+  //     props.onChange?.(editor!.getValue());
+  //   });
+  // }
+
+  // createEffect(() => {
+  //   // console.log('[MonacoEditor.recived]', props.content);
+
+  //   if (!editor || outgoing.has(props.content)) return;
+
+  //   if (props.content !== editor.getValue())
+  //     editor.setValue(props.content || '');
+  // });
+
+  // return element;
+
+  // function initializeMonaco() {
+  //   return monaco.editor.create(element, {
+  //     value: untrack(() => props.content) || '',
+  //     theme: 'vs-dark',
+  //     readOnly: props.readonly || false,
+  //     wordBasedSuggestions: language() === 'markdown' ? false : true,
+  //     language: language(),
+  //     rulers: [80, 120],
+  //     tabSize: 2,
+  //     'semanticHighlighting.enabled': true,
+  //     wordWrap: true ? 'on' : 'off',
+  //   });
+  // }
 }
 
 function getLanguageFor(ext: string) {

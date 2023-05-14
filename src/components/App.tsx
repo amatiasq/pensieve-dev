@@ -45,8 +45,14 @@ function RepositoryEditor() {
 
 function EditActiveFile(props: { slot?: string }) {
   const file = useActiveFile();
+
   return (
-    <MonacoEditor filename={file()!} onChange={(x) => console.log('AAAA', x)} />
+    <div id="editor" slot={props.slot}>
+      <MonacoEditor
+        filename={file()!}
+        onChange={(x) => console.log('AAAA', x)}
+      />
+    </div>
   );
 }
 //   const file = useActiveFile();
