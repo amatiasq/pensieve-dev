@@ -1,10 +1,15 @@
+// import monaco components individually?
+//
 // import 'monaco-editor/esm/vs/basic-languages/monaco.contribution';
 // import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 // import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import * as monaco from 'monaco-editor';
-import { createMemo } from 'solid-js';
 
-// import type { editor } from 'monaco-editor';
+import * as monaco from 'monaco-editor';
+import { createEffect, createMemo } from 'solid-js';
+import { extendMonaco } from '../monaco/extendMonaco';
+import * as monacoHarcodedConfig from '../monaco/monacoConfiguration';
+
+extendMonaco({}, {});
 
 export type Content = string | null | undefined;
 
@@ -34,13 +39,9 @@ export function MonacoEditor(props: {
   const lines = createMemo(() => content()?.split('\n').length ?? 0);
 
   const editor = monaco.editor.create(element, {
-    value: props.filename,
+    value: content(),
     language: 'typescript',
-    automaticLayout: true,
-    contextmenu: false,
-    renderLineHighlight: 'none',
-    // theme: 'pensieve',
-    theme: 'vs-dark',
+    ...monacoHarcodedConfig,
     'semanticHighlighting.enabled': true,
     minimap: { enabled: lines() > 100 },
     readOnly: props.readonly,
@@ -49,6 +50,17 @@ export function MonacoEditor(props: {
     // tabSize,
     // wordBasedSuggestions: isMarkdown ? false : true,
     // wordWrap: wordWrap ? 'on' : 'off',
+  });
+
+  createEffect(() => {
+    editor.updateOptions({
+      minimap: { enabled: lines() > 100 },
+      readOnly: props.readonly,
+    });
+  });
+
+  createEffect(() => {
+    editor.setValue(content());
   });
 
   editor.onDidChangeModelContent(() => {
