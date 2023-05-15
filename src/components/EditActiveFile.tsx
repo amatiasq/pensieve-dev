@@ -27,7 +27,10 @@ export function EditActiveFile(props: { slot?: string }) {
           <MonacoEditor
             filename={file()!}
             content={content()}
-            onChange={(x) => console.log('AAAA', x)}
+            onChange={(x) => {
+              console.log('onChange', x);
+              return setContent(x);
+            }}
           />
         </Match>
       </Switch>
