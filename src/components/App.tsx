@@ -2,6 +2,7 @@ import { Match, Switch } from 'solid-js';
 import { FixedDialog } from '../atoms/FixedDialog';
 import { ActiveFileProvider } from '../hooks/ActiveFileProvider';
 import { ActiveRepoProvider, repoStatus } from '../hooks/ActiveRepoProvider';
+import { useSetting } from '../hooks/useSettingsFile';
 import { EditActiveFile } from './EditActiveFile';
 import { FileTree } from './FileTree';
 import { Landing } from './Landing';
@@ -30,10 +31,12 @@ function RepositoryLoader() {
 }
 
 function RepositoryEditor() {
+  const sidebarWidth = useSetting('sidebarWidth');
+
   return (
     <ActiveFileProvider>
       <sl-split-panel style="flex: 1">
-        <aside slot="start">
+        <aside slot="start" style={`width: ${sidebarWidth}px`}>
           <sl-input role="search" placeholder="Search"></sl-input>
           <FileTree />
         </aside>
