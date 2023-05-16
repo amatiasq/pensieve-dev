@@ -12,7 +12,7 @@ export function EditActiveFile(props: { slot?: string }) {
 
   createEffect(async () => {
     setReady(false);
-    const storedContent = await repo().getFileContent(file()!);
+    const storedContent = await repo().getFileContent(file());
 
     batch(() => {
       setContent(storedContent!);
@@ -28,8 +28,8 @@ export function EditActiveFile(props: { slot?: string }) {
             filename={file()!}
             content={content()}
             onChange={(x) => {
-              console.log('onChange', x);
-              return setContent(x);
+              setContent(x);
+              repo().writeFile(file(), x);
             }}
           />
         </Match>

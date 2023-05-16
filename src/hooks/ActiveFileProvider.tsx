@@ -9,7 +9,7 @@ import {
 const provider = createContext<Accessor<string | null>>(() => null);
 
 export function useActiveFile() {
-  return useContext(provider);
+  return useContext(provider) as Accessor<string>;
 }
 
 export function ActiveFileProvider(props: ParentProps) {

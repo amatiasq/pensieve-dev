@@ -41,28 +41,39 @@ const DEFAULT_SETTINGS: Settings = {
   foo: (files) => files,
 };
 
+const [settings, setSettings] = createSignal<Partial<Settings>>({});
+
 export function useSettingsFile() {
   const repo = useActiveRepo();
-  const [settings, setSettings] = createSignal<Partial<Settings>>({});
+  let sus: () => boolean;
 
   createEffect(async () => {
-    // watch changes in file list
-    repo().files();
-
     for (const file of SETTINGS_FILES) {
       if (await repo().hasFile(file)) {
-        try {
-          const content = await repo().importFile(file);
-          setSettings(content);
-          console.log('Settings:', content);
-        } catch (e) {
-          console.error(`Error importing config file: ${file}`, e);
-        }
+        loadSettings(file);
+        break;
       }
     }
+
+    sus?.();
+    sus = repo().onChange((path) => {
+      if (SETTINGS_FILES.includes(path.slice(1))) {
+        loadSettings(path);
+      }
+    });
   });
 
   return settings;
+
+  async function loadSettings(filename: (typeof SETTINGS_FILES)[number]) {
+    try {
+      const content = await repo().importFile(filename);
+      setSettings(content);
+      console.log('Settings:', content);
+    } catch (e) {
+      console.error(`Error importing config file: ${filename}`, e);
+    }
+  }
 }
 
 export function useSetting<Key extends keyof Settings>(

@@ -1,3 +1,4 @@
+import { emitter } from '@amatiasq/emitter';
 import { dirname } from '@isomorphic-git/lightning-fs/src/path';
 import { Accessor, batch, createSignal, Setter } from 'solid-js';
 import {
@@ -12,6 +13,7 @@ import { GitRepository } from './GitRepository';
 const join = (...paths: string[]) => paths.join('/').replace(/\/+/g, '/');
 
 export class Repository {
+  readonly #onChange = emitter<string>();
   readonly files: Accessor<string[]>;
   readonly isCloning: Accessor<boolean | null>;
 
@@ -33,6 +35,10 @@ export class Repository {
     initialize(this, isCloning, setIsCloning, setFiles);
   }
 
+  onChange(fn: (path: string) => void) {
+    return this.#onChange.subscribe(fn);
+  }
+
   getFiles() {
     return getAllFiles(this.path);
   }
@@ -47,7 +53,8 @@ export class Repository {
 
   async writeFile(path: string, content: string) {
     await mkdirRecursive(dirname(path));
-    return writeFileContent(join(this.path, path), content);
+    await writeFileContent(join(this.path, path), content);
+    this.#onChange(path);
   }
 
   async getFileAsBlob(path: string, type: 'text/plain' | 'text/javascript') {

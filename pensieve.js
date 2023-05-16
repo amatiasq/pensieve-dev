@@ -3,6 +3,7 @@ export const settings = {
 };
 
 export function customizeFileList(files) {
-  // lel
-  return files.reverse();
+  // throw new Error("Potato")
+  // return [...files].reverse();
+  // return files.filter(x => x.startsWith('.'))
 }

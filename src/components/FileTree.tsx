@@ -9,8 +9,9 @@ export function FileTree(props: {}) {
   const root = () => `${document.baseURI}${repo().path.slice(1)}/#`;
 
   const tree = () => {
-    const files = customSort(repo().files());
-    return useFileTree(files, root());
+    const files = repo().files();
+    const sorted = customSort(files) ?? files;
+    return useFileTree(sorted, root());
   };
 
   return <sl-tree selection="leaf">{tree().map(TreeItem)}</sl-tree>;
