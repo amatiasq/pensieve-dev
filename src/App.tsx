@@ -4,7 +4,10 @@ import { Landing } from './common/Landing';
 import { EditActiveFile } from './editor/EditActiveFile';
 import { Sidebar } from './sidebar/Sidebar';
 import { ActiveFileProvider } from './storage/ActiveFileProvider';
-import { ActiveRepoProvider, repoStatus } from './storage/ActiveRepoProvider';
+import {
+  ActiveRepoProvider,
+  useRepoStatus,
+} from './storage/ActiveRepoProvider';
 
 export function App() {
   return (
@@ -15,7 +18,7 @@ export function App() {
 }
 
 function RepositoryLoader() {
-  const status = repoStatus();
+  const status = useRepoStatus();
 
   return (
     <Switch fallback={<RepositoryEditor />}>

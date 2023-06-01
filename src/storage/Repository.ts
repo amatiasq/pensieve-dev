@@ -1,20 +1,15 @@
 import { emitter } from '@amatiasq/emitter';
-import { dirname } from '@isomorphic-git/lightning-fs/src/path';
 import { Accessor, batch, createSignal, Setter } from 'solid-js';
-import { GitRepository } from './GitRepository';
-import {
-  fileExists,
-  getAllFiles,
-  getFileContent,
-  mkdirRecursive,
-  writeFileContent,
-} from './internals/fs';
+import { getAllFiles } from './internals/fs';
+import { GitRepository } from './internals/GitRepository';
+import { RepoFile } from './RepoFile';
+import { FilePath } from './types';
 
 const join = (...paths: string[]) => paths.join('/').replace(/\/+/g, '/');
 
 export class Repository {
-  readonly #onChange = emitter<string>();
-  readonly files: Accessor<string[]>;
+  readonly #onChange = emitter<FilePath>();
+  readonly filePaths: Accessor<FilePath[]>;
   readonly isCloning: Accessor<boolean | null>;
 
   get path() {
@@ -27,15 +22,15 @@ export class Repository {
 
   constructor(public readonly user: string, public readonly name: string) {
     const [isCloning, setIsCloning] = createSignal<boolean | null>(null);
-    const [files, setFiles] = createSignal<string[]>([]);
+    const [files, setFiles] = createSignal<FilePath[]>([]);
 
     this.isCloning = isCloning;
-    this.files = files;
+    this.filePaths = files;
 
     initialize(this, isCloning, setIsCloning, setFiles);
   }
 
-  onChange(fn: (path: string) => void) {
+  onChange(fn: (path: FilePath) => void) {
     return this.#onChange.subscribe(fn);
   }
 
@@ -43,31 +38,13 @@ export class Repository {
     return getAllFiles(this.path);
   }
 
-  hasFile(path: string) {
-    return fileExists(join(this.path, path));
+  getFile(path: FilePath) {
+    const fullpath = join(this.path, path);
+    return RepoFile.get(fullpath);
   }
 
-  getFileContent(path: string) {
-    return getFileContent(join(this.path, path));
-  }
-
-  async writeFile(path: string, content: string) {
-    await mkdirRecursive(dirname(path));
-    await writeFileContent(join(this.path, path), content);
-    this.#onChange(path);
-  }
-
-  async getFileAsBlob(path: string, type: 'text/plain' | 'text/javascript') {
-    const content = await getFileContent(join(this.path, path));
-    return new Blob([content!], { type });
-  }
-
-  async importFile(path: string) {
-    const blob = await this.getFileAsBlob(path, 'text/javascript');
-    const url = URL.createObjectURL(blob);
-    const module = await import(/* @vite-ignore */ url);
-    URL.revokeObjectURL(url);
-    return module;
+  hasFile(path: FilePath) {
+    return this.getFile(path).exists();
   }
 }
 
@@ -96,7 +73,7 @@ async function initialize(
 
   const git = new GitRepository(repo);
 
-  if (await repo.hasFile('.git/HEAD')) {
+  if (await repo.hasFile('.git/HEAD' as FilePath)) {
     console.log('PULL');
     // await git.pull();
   } else {

@@ -72,3 +72,8 @@ export async function writeFileContent(path: string, content: string) {
   log('WRITE', path);
   return fs.writeFile(path, content, 'utf8');
 }
+
+export async function removeFile(path: string) {
+  log('REMOVE', path);
+  return fs.unlink(path);
+}

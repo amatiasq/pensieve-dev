@@ -12,7 +12,7 @@ const provider = createContext<Accessor<Repository | null>>(() => null);
 
 type RepositoryState = 'none' | 'clonning' | 'ready';
 
-export function repoStatus(): Accessor<RepositoryState> {
+export function useRepoStatus(): Accessor<RepositoryState> {
   const repo = useContext(provider);
 
   return () => {
@@ -22,6 +22,7 @@ export function repoStatus(): Accessor<RepositoryState> {
     return 'ready';
   };
 }
+
 export function useActiveRepo() {
   const repo = useContext(provider);
 
@@ -39,9 +40,9 @@ export function useActiveRepo() {
 export function ActiveRepoProvider(props: ParentProps) {
   const [repo, setRepo] = createSignal(getRepositoryFromUrl());
 
-  window.addEventListener('locationchange', () =>
-    setRepo(getRepositoryFromUrl())
-  );
+  window.addEventListener('locationchange', () => {
+    return setRepo(getRepositoryFromUrl());
+  });
 
   return <provider.Provider value={repo}>{props.children}</provider.Provider>;
 }

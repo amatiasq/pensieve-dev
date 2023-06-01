@@ -1,7 +1,7 @@
 import { AuthCallback, PushResult } from 'isomorphic-git';
-import type { Repository } from './Repository';
+import type { Repository } from '../Repository';
+import { mkdirRecursive } from './fs';
 import { add, clone, commit, log, pull, push, status } from './git';
-import { mkdirRecursive } from './internals/fs';
 
 export class GitRepository {
   #onAuth: AuthCallback;
@@ -63,19 +63,13 @@ export class GitRepository {
       dir: this.path,
       remote: 'origin',
       onAuth: this.#onAuth,
+      onMessage: (message) => console.log('Push message', message),
+      onProgress: (progress) => console.log('Push progress', progress),
+      onAuthSuccess: () => console.log('Auth success'),
       onAuthFailure: () => {
         console.log('Auth failed');
         localStorage.removeItem('pensieve.auth');
         return this.push();
-      },
-      onAuthSuccess: () => {
-        console.log('Auth success');
-      },
-      onMessage: (message) => {
-        console.log('Push message', message);
-      },
-      onProgress: (progress) => {
-        console.log('Push progress', progress);
       },
     });
   }
