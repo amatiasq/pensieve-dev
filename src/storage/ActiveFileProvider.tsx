@@ -9,7 +9,7 @@ import { FilePath } from './types';
 
 const provider = createContext<Accessor<FilePath | null>>(() => null);
 
-export function useActiveFile() {
+export function useActiveFilePath() {
   return useContext(provider) as Accessor<FilePath>;
 }
 

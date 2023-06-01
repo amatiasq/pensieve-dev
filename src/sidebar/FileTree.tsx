@@ -8,7 +8,7 @@ export function FileTree(props: {}) {
   const root = () => `${document.baseURI}${repo().path.slice(1)}/#`;
 
   const tree = () => {
-    const files = repo().files();
+    const files = repo().files;
     // const sorted = customSort(files) ?? files;
     // return useFileTree(sorted, root());
     return useFileTree(files, root());

@@ -1,19 +1,20 @@
 import { Match, Switch, batch, createEffect, createSignal } from 'solid-js';
-import { useActiveFile } from '../storage/ActiveFileProvider';
+import { useActiveFilePath } from '../storage/ActiveFileProvider';
 import { useActiveRepo } from '../storage/ActiveRepoProvider';
 import { FileContent } from '../storage/types';
 import { MonacoEditor } from './MonacoEditor';
 
 export function EditActiveFile(props: { slot?: string }) {
   const repo = useActiveRepo();
-  const file = useActiveFile();
+  const filePath = useActiveFilePath();
+  const file = () => repo().getFile(filePath());
 
   const [ready, setReady] = createSignal(false);
   const [content, setContent] = createSignal('');
 
   createEffect(async () => {
     setReady(false);
-    const storedContent = await repo().getFile(file()).getContent();
+    const storedContent = await file().getContent();
 
     batch(() => {
       setContent(storedContent!);
@@ -26,13 +27,11 @@ export function EditActiveFile(props: { slot?: string }) {
       <Switch fallback={<div>loading...</div>}>
         <Match when={ready()}>
           <MonacoEditor
-            filename={file()!}
+            filename={filePath()!}
             content={content()}
             onChange={(x) => {
               setContent(x);
-              repo()
-                .getFile(file())
-                .setDraft(x as FileContent);
+              file().setDraft(x as FileContent);
             }}
           />
         </Match>
