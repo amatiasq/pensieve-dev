@@ -1,5 +1,6 @@
-import { emitter } from '@amatiasq/emitter';
 import { dirname } from '@isomorphic-git/lightning-fs/src/path';
+import { Accessor, createSignal } from 'solid-js';
+import type { Repository } from './Repository';
 import {
   fileExists,
   getFileContent,
@@ -7,16 +8,21 @@ import {
   removeFile,
   writeFileContent,
 } from './internals/fs';
-import { FileContent, FileHeader, FileMimeType } from './types';
+import type {
+  FileContent,
+  FileFullPath,
+  FileHeader,
+  FileMimeType,
+} from './types';
 
-const cache = new Map<string, WeakRef<RepoFile>>();
+const cache = new Map<FileFullPath, WeakRef<RepoFile>>();
 
 export class RepoFile {
-  static get(fullpath: string): RepoFile {
+  static get(repo: Repository, fullpath: FileFullPath): RepoFile {
     const cached = cache.get(fullpath)?.deref();
     if (cached) return cached;
 
-    const file = new RepoFile(fullpath);
+    const file = new RepoFile(repo, fullpath);
     cache.set(fullpath, new WeakRef(file));
     return file;
   }
@@ -24,13 +30,23 @@ export class RepoFile {
   // static above
   // instance below
 
-  readonly #onChange = emitter();
-  #draft = null as FileContent | null;
+  #fetching: Promise<FileContent> | null = null;
+  #content: Accessor<FileContent | null>;
+  #setContent: (content: FileContent | null) => void;
 
-  private constructor(public readonly path: string) {}
+  get content() {
+    const content = this.#content();
+    if (content == null) this.fetchContent();
+    return content;
+  }
 
-  onChange(fn: (file: RepoFile) => void) {
-    return this.#onChange.subscribe(fn);
+  private constructor(
+    public readonly repo: Repository,
+    public readonly path: FileFullPath
+  ) {
+    const [content, setContent] = createSignal<FileContent | null>(null);
+    this.#content = content;
+    this.#setContent = setContent;
   }
 
   exists() {
@@ -38,22 +54,29 @@ export class RepoFile {
   }
 
   async fetchContent() {
-    const content = (await getFileContent(this.path)) as FileContent;
+    if (this.#fetching) return this.#fetching;
+
+    this.#fetching = getFileContent(this.path) as Promise<FileContent>;
+    const content = await this.#fetching;
+
     this.setDraft(content);
+    this.#fetching = null;
     return content;
   }
 
   async getContent() {
-    return this.#draft == null ? this.fetchContent() : this.#draft;
+    const content = this.#content();
+    return content == null ? this.fetchContent() : content;
   }
 
   async setContent(content: FileContent) {
-    const prev = this.#draft;
+    const prev = this.#content();
 
     try {
       this.setDraft(content);
       await mkdirRecursive(dirname(this.path));
       await writeFileContent(this.path, content);
+      this.repo.fileChanged(this);
     } catch (e) {
       this.setDraft(prev);
       throw e;
@@ -61,9 +84,9 @@ export class RepoFile {
   }
 
   setDraft(content: FileContent | null) {
-    if (this.#draft === content) return;
-    this.#draft = content;
-    this.#onChange(content);
+    if (this.#content() == content) {
+      this.#setContent(content);
+    }
   }
 
   async peekContent(lines = 5) {

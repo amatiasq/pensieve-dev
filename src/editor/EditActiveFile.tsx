@@ -1,6 +1,7 @@
 import { Match, Switch, batch, createEffect, createSignal } from 'solid-js';
 import { useActiveFile } from '../storage/ActiveFileProvider';
 import { useActiveRepo } from '../storage/ActiveRepoProvider';
+import { FileContent } from '../storage/types';
 import { MonacoEditor } from './MonacoEditor';
 
 export function EditActiveFile(props: { slot?: string }) {
@@ -12,7 +13,7 @@ export function EditActiveFile(props: { slot?: string }) {
 
   createEffect(async () => {
     setReady(false);
-    const storedContent = await repo().getFileContent(file());
+    const storedContent = await repo().getFile(file()).getContent();
 
     batch(() => {
       setContent(storedContent!);
@@ -29,7 +30,9 @@ export function EditActiveFile(props: { slot?: string }) {
             content={content()}
             onChange={(x) => {
               setContent(x);
-              repo().writeFile(file(), x);
+              repo()
+                .getFile(file())
+                .setDraft(x as FileContent);
             }}
           />
         </Match>

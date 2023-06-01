@@ -1,16 +1,16 @@
-import { emitter } from '@amatiasq/emitter';
 import { Accessor, batch, createSignal, Setter } from 'solid-js';
 import { getAllFiles } from './internals/fs';
 import { GitRepository } from './internals/GitRepository';
 import { RepoFile } from './RepoFile';
-import { FilePath } from './types';
+import { FileFullPath, FilePath } from './types';
 
 const join = (...paths: string[]) => paths.join('/').replace(/\/+/g, '/');
 
 export class Repository {
-  readonly #onChange = emitter<FilePath>();
-  readonly filePaths: Accessor<FilePath[]>;
-  readonly isCloning: Accessor<boolean | null>;
+  // readonly #isCloning: Accessor<boolean | null>;
+  readonly #files: Accessor<FilePath[]>;
+  readonly #setFiles: (files: FilePath[]) => void;
+  #fetching: Promise<FilePath[]> | null = null;
 
   get path() {
     return '/' + join(this.user, this.name);
@@ -20,31 +20,50 @@ export class Repository {
     return `https://github.com${this.path}`;
   }
 
+  get files() {
+    const files = this.#files();
+    if (files.length === 0) this.fetchFiles();
+    return files;
+  }
+
   constructor(public readonly user: string, public readonly name: string) {
     const [isCloning, setIsCloning] = createSignal<boolean | null>(null);
     const [files, setFiles] = createSignal<FilePath[]>([]);
 
-    this.isCloning = isCloning;
-    this.filePaths = files;
+    // this.#isCloning = isCloning;
+    this.#files = files;
+    this.#setFiles = setFiles;
 
     initialize(this, isCloning, setIsCloning, setFiles);
   }
 
-  onChange(fn: (path: FilePath) => void) {
-    return this.#onChange.subscribe(fn);
+  async fetchFiles() {
+    if (this.#fetching) return this.#fetching;
+
+    this.#fetching = getAllFiles(this.path) as Promise<FilePath[]>;
+    const filePaths = await this.#fetching;
+
+    this.#setFiles(filePaths);
+    this.#fetching = null;
+    return filePaths;
   }
 
-  getFiles() {
-    return getAllFiles(this.path);
-  }
-
-  getFile(path: FilePath) {
-    const fullpath = join(this.path, path);
-    return RepoFile.get(fullpath);
+  async getFiles() {
+    const files = this.#files();
+    return files.length === 0 ? this.fetchFiles() : files;
   }
 
   hasFile(path: FilePath) {
     return this.getFile(path).exists();
+  }
+
+  getFile(path: FilePath) {
+    const fullpath = join(this.path, path) as FileFullPath;
+    return RepoFile.get(this, fullpath);
+  }
+
+  fileChanged(file: RepoFile) {
+    this.#setFiles([...this.#files()]);
   }
 }
 
