@@ -1,6 +1,6 @@
 import { Match, Switch, batch, createEffect, createSignal } from 'solid-js';
-import { useActiveFile } from '../hooks/ActiveFileProvider';
-import { useActiveRepo } from '../hooks/ActiveRepoProvider';
+import { useActiveFile } from '../storage/ActiveFileProvider';
+import { useActiveRepo } from '../storage/ActiveRepoProvider';
 import { MonacoEditor } from './MonacoEditor';
 
 export function EditActiveFile(props: { slot?: string }) {

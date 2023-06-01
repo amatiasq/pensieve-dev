@@ -1,9 +1,7 @@
-import { editor, languages } from 'monaco-editor';
+import { languages } from 'monaco-editor';
 import IMonarchLanguage = languages.IMonarchLanguage;
-import IStandaloneCodeEditor = editor.IModel;
 
 export async function extendMonacoLanguage(
-  // monaco: IStandaloneCodeEditor,
   baseLanguage: string,
   definition: IMonarchLanguage
 ) {

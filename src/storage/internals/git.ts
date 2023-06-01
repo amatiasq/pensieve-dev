@@ -43,7 +43,7 @@ type OmitDefaults<T extends (...args: any) => any> = Omit<
 
 function wrap<
   TName extends keyof typeof git,
-  TOperation extends typeof git[TName]
+  TOperation extends (typeof git)[TName]
 >(name: TName): (options: OmitDefaults<TOperation>) => ReturnType<TOperation> {
   const fn = git[name];
   return (options) => fn({ ...defaultProps, ...options } as any) as any;

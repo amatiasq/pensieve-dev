@@ -1,7 +1,7 @@
 import { AuthCallback, PushResult } from 'isomorphic-git';
-import { mkdirRecursive } from './fs';
-import { add, clone, commit, log, pull, push, status } from './git';
 import type { Repository } from './Repository';
+import { add, clone, commit, log, pull, push, status } from './git';
+import { mkdirRecursive } from './internals/fs';
 
 export class GitRepository {
   #onAuth: AuthCallback;

@@ -1,5 +1,5 @@
 import { editor, languages } from 'monaco-editor';
-import { errorFor } from '../tools/errorFor';
+import { errorFor } from './errorFor';
 import { extendMonacoLanguage } from './extendMonacoLanguage';
 import { provideCustomLinks } from './extendMonacoLinks';
 import { extendMonacoTheme } from './extendMonacoTheme';

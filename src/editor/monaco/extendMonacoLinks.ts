@@ -1,5 +1,5 @@
 import { editor, languages, Uri } from 'monaco-editor';
-import { errorFor } from '../tools/errorFor';
+import { errorFor } from './errorFor';
 import { getMatchesForRegex } from './getMatchesForRegex';
 import ITextModel = editor.ITextModel;
 

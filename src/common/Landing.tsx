@@ -1,5 +1,5 @@
 import { SlInput } from '@shoelace-style/shoelace';
-import { FixedDialog } from '../atoms/FixedDialog';
+import { FixedDialog } from './FixedDialog';
 
 export function Landing() {
   let input!: SlInput;

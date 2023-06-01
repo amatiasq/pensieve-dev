@@ -5,7 +5,7 @@ import {
   ParentProps,
   useContext,
 } from 'solid-js';
-import { Repository } from '../tools/Repository';
+import { Repository } from './Repository';
 
 export type RepositoryStatus = 'none' | 'clonning' | 'ready';
 const provider = createContext<Accessor<Repository | null>>(() => null);

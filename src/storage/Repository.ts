@@ -1,14 +1,14 @@
 import { emitter } from '@amatiasq/emitter';
 import { dirname } from '@isomorphic-git/lightning-fs/src/path';
 import { Accessor, batch, createSignal, Setter } from 'solid-js';
+import { GitRepository } from './GitRepository';
 import {
   fileExists,
   getAllFiles,
   getFileContent,
   mkdirRecursive,
   writeFileContent,
-} from './fs';
-import { GitRepository } from './GitRepository';
+} from './internals/fs';
 
 const join = (...paths: string[]) => paths.join('/').replace(/\/+/g, '/');
 

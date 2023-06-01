@@ -1,17 +1,17 @@
-import { useActiveRepo } from '../hooks/ActiveRepoProvider';
-import { INode, isLeaf, useFileTree } from '../hooks/useFileTree';
-import { useSettingFunction } from '../hooks/useSettingsFile';
+import { useActiveRepo } from '../storage/ActiveRepoProvider';
+import { INode, isLeaf, useFileTree } from './useFileTree';
 
 export function FileTree(props: {}) {
   const repo = useActiveRepo();
-  const customSort = useSettingFunction('customizeFileList');
+  // const customSort = useSettingFunction('customizeFileList');
 
   const root = () => `${document.baseURI}${repo().path.slice(1)}/#`;
 
   const tree = () => {
     const files = repo().files();
-    const sorted = customSort(files) ?? files;
-    return useFileTree(sorted, root());
+    // const sorted = customSort(files) ?? files;
+    // return useFileTree(sorted, root());
+    return useFileTree(files, root());
   };
 
   return <sl-tree selection="leaf">{tree().map(TreeItem)}</sl-tree>;

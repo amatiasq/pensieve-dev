@@ -6,8 +6,8 @@
 
 import * as monaco from 'monaco-editor';
 import { createEffect, createMemo, onCleanup, untrack } from 'solid-js';
-import { extendMonaco } from '../monaco/extendMonaco';
-import * as monacoHarcodedConfig from '../monaco/monacoConfiguration';
+import { extendMonaco } from './monaco/extendMonaco';
+import * as monacoHarcodedConfig from './monaco/monacoConfiguration';
 
 extendMonaco({}, {});
 
