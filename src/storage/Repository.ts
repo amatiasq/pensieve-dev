@@ -7,7 +7,7 @@ import { FileFullPath, FilePath } from './types';
 const join = (...paths: string[]) => paths.join('/').replace(/\/+/g, '/');
 
 export class Repository {
-  // readonly #isCloning: Accessor<boolean | null>;
+  readonly isCloning: Accessor<boolean | null>;
   readonly #files: Accessor<FilePath[]>;
   readonly #setFiles: (files: FilePath[]) => void;
   #fetching: Promise<FilePath[]> | null = null;
@@ -30,7 +30,7 @@ export class Repository {
     const [isCloning, setIsCloning] = createSignal<boolean | null>(null);
     const [files, setFiles] = createSignal<FilePath[]>([]);
 
-    // this.#isCloning = isCloning;
+    this.isCloning = isCloning;
     this.#files = files;
     this.#setFiles = setFiles;
 
