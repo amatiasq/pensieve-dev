@@ -8,12 +8,7 @@ import {
   removeFile,
   writeFileContent,
 } from './internals/fs';
-import type {
-  FileContent,
-  FileFullPath,
-  FileHeader,
-  FileMimeType,
-} from './types';
+import { FileContent, FileFullPath, FileHeader, FileMimeType } from './types';
 
 const cache = new Map<FileFullPath, WeakRef<RepoFile>>();
 
@@ -32,12 +27,19 @@ export class RepoFile {
 
   #fetching: Promise<FileContent> | null = null;
   #content: Accessor<FileContent | null>;
+  #module: unknown | null = null;
   #setContent: (content: FileContent | null) => void;
 
-  get content() {
+  get content(): FileContent | null {
     const content = this.#content();
     if (content == null) this.fetchContent();
     return content;
+  }
+
+  set content(content: string | null) {
+    if (this.#content() === content) return;
+    this.#setContent(content ? FileContent(content) : null);
+    this.repo.fileChanged(this);
   }
 
   private constructor(

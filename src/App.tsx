@@ -1,39 +1,29 @@
 import { Match, Switch } from 'solid-js';
+import { Landing } from './Landing';
 import { FixedDialog } from './common/FixedDialog';
-import { Landing } from './common/Landing';
+import { useSetting } from './common/useSetting';
 import { EditActiveFile } from './editor/EditActiveFile';
 import { Sidebar } from './sidebar/Sidebar';
 import { ActiveFileProvider } from './storage/ActiveFileProvider';
-import {
-  ActiveRepoProvider,
-  useRepoStatus,
-} from './storage/ActiveRepoProvider';
+import { ActiveRepoProvider, repoStatus } from './storage/ActiveRepoProvider';
 
 export function App() {
   return (
     <ActiveRepoProvider>
-      <RepositoryLoader />
+      <Switch fallback={<RepositoryEditor />}>
+        <Match when={repoStatus() == 'none'}>
+          <Landing />
+        </Match>
+        <Match when={repoStatus() == 'clonning'}>
+          <FixedDialog header="Clonning">Git clone in progress...</FixedDialog>
+        </Match>
+      </Switch>
     </ActiveRepoProvider>
   );
 }
 
-function RepositoryLoader() {
-  const status = useRepoStatus();
-
-  return (
-    <Switch fallback={<RepositoryEditor />}>
-      <Match when={status() == 'none'}>
-        <Landing />
-      </Match>
-      <Match when={status() == 'clonning'}>
-        <FixedDialog header="Clonning">Git clone in progress...</FixedDialog>
-      </Match>
-    </Switch>
-  );
-}
-
 function RepositoryEditor() {
-  //   const sidebarWidth = useSetting('sidebarWidth');
+  const sidebarWidth = useSetting('sidebarWidth');
 
   return (
     <ActiveFileProvider>

@@ -1,14 +1,13 @@
-import { useActiveRepo } from '../storage/ActiveRepoProvider';
+import { activeRepo } from '../storage/ActiveRepoProvider';
 import { INode, isLeaf, useFileTree } from './useFileTree';
 
 export function FileTree(props: {}) {
-  const repo = useActiveRepo();
   // const customSort = useSettingFunction('customizeFileList');
 
-  const root = () => `${document.baseURI}${repo().path.slice(1)}/#`;
+  const root = () => `${document.baseURI}${activeRepo().path.slice(1)}/#`;
 
   const tree = () => {
-    const files = repo().files;
+    const files = activeRepo().files;
     // const sorted = customSort(files) ?? files;
     // return useFileTree(sorted, root());
     return useFileTree(files, root());

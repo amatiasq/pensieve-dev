@@ -9,9 +9,7 @@ import { FilePath } from './types';
 
 const provider = createContext<Accessor<FilePath | null>>(() => null);
 
-export function useActiveFilePath() {
-  return useContext(provider) as Accessor<FilePath>;
-}
+export const activeFilePath = useContext(provider);
 
 export function ActiveFileProvider(props: ParentProps) {
   const [route, setRoute] = createSignal(getFilePathFromUrl());

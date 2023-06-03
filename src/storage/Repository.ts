@@ -54,10 +54,10 @@ export class Repository {
   }
 
   hasFile(path: FilePath) {
-    return this.getFile(path).exists();
+    return this.file(path).exists();
   }
 
-  getFile(path: FilePath) {
+  file(path: FilePath) {
     const fullpath = join(this.path, path) as FileFullPath;
     return RepoFile.get(this, fullpath);
   }
