@@ -23,12 +23,26 @@ export function App() {
 }
 
 function RepositoryEditor() {
-  const sidebarWidth = useSetting('sidebarWidth');
+  const [sidebarWidth, setSidebarWidth] = useSetting('sidebarWidth');
+
+  function handleReposition(event: CustomEvent<{ position: number }>) {
+    const el = event.target as Element | null;
+    const newWidth = el?.firstElementChild?.clientWidth;
+
+    // this event is fired when the sidebar loads
+    if (!newWidth) return;
+
+    setSidebarWidth(newWidth);
+  }
 
   return (
     <ActiveFileProvider>
-      <sl-split-panel style="flex: 1">
-        <aside slot="start" style={`width: ${300}px`}>
+      <sl-split-panel
+        style="flex: 1"
+        positionInPixels={sidebarWidth()}
+        on:sl-reposition={handleReposition}
+      >
+        <aside slot="start">
           <sl-input role="search" placeholder="Search"></sl-input>
           <Sidebar />
         </aside>

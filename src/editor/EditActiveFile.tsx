@@ -11,7 +11,7 @@ export function EditActiveFile(props: { slot?: string }) {
       <Switch fallback={<div>loading...</div>}>
         <Match when={!content.loading}>
           <MonacoEditor
-            filename={activeFilePath()!}
+            filename={activeFilePath() ?? ''}
             content={content()}
             onChange={handleChange}
           />

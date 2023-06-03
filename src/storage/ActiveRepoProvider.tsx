@@ -7,9 +7,9 @@ import {
 } from 'solid-js';
 import { Repository } from './Repository';
 
-const provider = createContext<Accessor<Repository | null>>(() => null);
-
-const repo = useContext(provider);
+const context = createContext<Accessor<Repository | null>>(() => null);
+const { Provider } = context;
+const repo = () => useContext(context)();
 
 export function activeRepo() {
   const value = repo();
@@ -32,7 +32,7 @@ export function ActiveRepoProvider(props: ParentProps) {
     return setRepo(getRepositoryFromUrl());
   });
 
-  return <provider.Provider value={repo}>{props.children}</provider.Provider>;
+  return <Provider value={repo}>{props.children}</Provider>;
 }
 
 function getRepositoryFromUrl() {
