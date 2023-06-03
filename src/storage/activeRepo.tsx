@@ -1,15 +1,11 @@
-import {
-  Accessor,
-  createContext,
-  createSignal,
-  ParentProps,
-  useContext,
-} from 'solid-js';
+import { createSignal } from 'solid-js';
 import { Repository } from './Repository';
 
-const context = createContext<Accessor<Repository | null>>(() => null);
-const { Provider } = context;
-const repo = () => useContext(context)();
+const [repo, setRepo] = createSignal(getRepositoryFromUrl());
+
+window.addEventListener('locationchange', () => {
+  return setRepo(getRepositoryFromUrl());
+});
 
 export function activeRepo() {
   const value = repo();
@@ -23,16 +19,6 @@ export function repoStatus() {
   if (value == null) return 'none';
   if (value.isCloning()) return 'clonning';
   return 'ready';
-}
-
-export function ActiveRepoProvider(props: ParentProps) {
-  const [repo, setRepo] = createSignal(getRepositoryFromUrl());
-
-  window.addEventListener('locationchange', () => {
-    return setRepo(getRepositoryFromUrl());
-  });
-
-  return <Provider value={repo}>{props.children}</Provider>;
 }
 
 function getRepositoryFromUrl() {

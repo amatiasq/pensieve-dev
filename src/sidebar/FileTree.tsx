@@ -1,5 +1,5 @@
 import { useSettingFunction } from '../common/useSetting';
-import { activeRepo } from '../storage/ActiveRepoProvider';
+import { activeRepo } from '../storage/activeRepo';
 import { INode, isLeaf, useFileTree } from './useFileTree';
 
 export function FileTree(props: {}) {

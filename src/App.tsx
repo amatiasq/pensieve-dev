@@ -4,21 +4,18 @@ import { FixedDialog } from './common/FixedDialog';
 import { useSetting } from './common/useSetting';
 import { EditActiveFile } from './editor/EditActiveFile';
 import { Sidebar } from './sidebar/Sidebar';
-import { ActiveFileProvider } from './storage/ActiveFileProvider';
-import { ActiveRepoProvider, repoStatus } from './storage/ActiveRepoProvider';
+import { repoStatus } from './storage/activeRepo';
 
 export function App() {
   return (
-    <ActiveRepoProvider>
-      <Switch fallback={<RepositoryEditor />}>
-        <Match when={repoStatus() == 'none'}>
-          <Landing />
-        </Match>
-        <Match when={repoStatus() == 'clonning'}>
-          <FixedDialog header="Clonning">Git clone in progress...</FixedDialog>
-        </Match>
-      </Switch>
-    </ActiveRepoProvider>
+    <Switch fallback={<RepositoryEditor />}>
+      <Match when={repoStatus() == 'none'}>
+        <Landing />
+      </Match>
+      <Match when={repoStatus() == 'clonning'}>
+        <FixedDialog header="Clonning">Git clone in progress...</FixedDialog>
+      </Match>
+    </Switch>
   );
 }
 
@@ -36,18 +33,16 @@ function RepositoryEditor() {
   }
 
   return (
-    <ActiveFileProvider>
-      <sl-split-panel
-        style="flex: 1"
-        positionInPixels={sidebarWidth()}
-        on:sl-reposition={handleReposition}
-      >
-        <aside slot="start">
-          <sl-input role="search" placeholder="Search"></sl-input>
-          <Sidebar />
-        </aside>
-        <EditActiveFile slot="end" />
-      </sl-split-panel>
-    </ActiveFileProvider>
+    <sl-split-panel
+      style="flex: 1"
+      positionInPixels={sidebarWidth()}
+      on:sl-reposition={handleReposition}
+    >
+      <aside slot="start">
+        <sl-input role="search" placeholder="Search"></sl-input>
+        <Sidebar />
+      </aside>
+      <EditActiveFile slot="end" />
+    </sl-split-panel>
   );
 }

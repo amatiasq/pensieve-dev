@@ -1,5 +1,5 @@
 import { createEffect } from 'solid-js';
-import { activeFile } from '../storage/ActiveFileProvider';
+import { activeFile } from '../storage/activeFile';
 import { MonacoEditor } from './MonacoEditor';
 
 export function EditActiveFile(props: { slot?: string }) {

@@ -1,5 +1,6 @@
 import { createEffect, createSignal } from 'solid-js';
-import { FilePath, executeFile } from '../storage/mod';
+import { executeFile } from '../storage/executeFile';
+import { FilePath } from '../storage/types';
 
 interface Settings {
   autosave: number;

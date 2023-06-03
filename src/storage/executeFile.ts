@@ -1,29 +1,6 @@
-import { Accessor, createEffect, createSignal } from 'solid-js';
-import { activeRepo } from './ActiveRepoProvider';
+import { createEffect, createSignal } from 'solid-js';
 import { FilePath } from './types';
-
-export * from './types';
-
-export function listFiles() {}
-
-export function useFile(filepath: Accessor<FilePath>) {
-  return () => activeRepo.maybe()?.file(filepath());
-}
-
-export function useFileContent(filepath: FilePath) {
-  const file = useFile(() => filepath);
-
-  function getContent() {
-    return file()?.content;
-  }
-
-  function setContent(newContent: string) {
-    const current = file();
-    if (current) current.content = newContent;
-  }
-
-  return [getContent, setContent] as const;
-}
+import { useFileContent } from './useFileContent';
 
 export function executeFile<T = unknown>(filepath: FilePath) {
   const type = 'text/javascript';
