@@ -42,14 +42,16 @@ const files = ['pensieve.js', 'pensieve.ts'].map(FilePath).map(executeFile);
 const [settings, setSettings] = createSignal<Partial<Settings>>({});
 
 createEffect(() => {
-  setSettings(() => {
-    for (const file of files) {
-      const mod = file();
-      if (mod) return mod;
-    }
+  setSettings(
+    (() => {
+      for (const file of files) {
+        const mod = file();
+        if (mod) return mod;
+      }
 
-    return {};
-  });
+      return {};
+    })()
+  );
 });
 
 export function useSetting<Key extends keyof Settings>(key: Key) {
@@ -59,4 +61,35 @@ export function useSetting<Key extends keyof Settings>(key: Key) {
       throw new Error('Are you nuts!?');
     },
   ] as const;
+}
+
+type FnSettings = Pick<
+  Settings,
+  {
+    [Key in keyof Settings]: Settings[Key] extends (...args: any[]) => any
+      ? Key
+      : never;
+  }[keyof Settings]
+>;
+
+export function useSettingFunction<Key extends keyof FnSettings>(
+  key: Key
+): (...args: Parameters<FnSettings[Key]>) => ReturnType<FnSettings[Key]> {
+  const [setting] = useSetting(key);
+
+  return (...args: Parameters<Settings[Key]>): ReturnType<Settings[Key]> => {
+    const fn = setting() as any;
+    const def = DEFAULT_SETTINGS[key] as any;
+
+    if (typeof fn !== 'function' || fn === def) {
+      return def(...args);
+    }
+
+    try {
+      return fn(...args);
+    } catch (error) {
+      console.error(`Error running setting function: ${key}`, error);
+      return def(...args);
+    }
+  };
 }

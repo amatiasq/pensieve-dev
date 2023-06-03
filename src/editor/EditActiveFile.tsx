@@ -1,32 +1,22 @@
-import { Match, Switch, createResource } from 'solid-js';
-import { activeFilePath } from '../storage/ActiveFileProvider';
-import { activeRepo } from '../storage/ActiveRepoProvider';
+import { createEffect } from 'solid-js';
+import { activeFile } from '../storage/ActiveFileProvider';
 import { MonacoEditor } from './MonacoEditor';
 
 export function EditActiveFile(props: { slot?: string }) {
-  const [content] = createResource(() => file()?.getContent());
+  createEffect(() => activeFile()?.fetchContent());
 
   return (
     <div id="editor" slot={props.slot}>
-      <Switch fallback={<div>loading...</div>}>
-        <Match when={!content.loading}>
-          <MonacoEditor
-            filename={activeFilePath() ?? ''}
-            content={content()}
-            onChange={handleChange}
-          />
-        </Match>
-      </Switch>
+      <MonacoEditor
+        filename={activeFile()?.path ?? ''}
+        content={activeFile()?.content ?? ''}
+        onChange={handleChange}
+      />
     </div>
   );
 
-  function file() {
-    const filePath = activeFilePath();
-    return filePath && activeRepo().file(filePath);
-  }
-
   function handleChange(newContent: string) {
-    const currentFile = file();
+    const currentFile = activeFile();
 
     if (currentFile) {
       currentFile.content = newContent;

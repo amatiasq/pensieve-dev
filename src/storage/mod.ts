@@ -11,13 +11,18 @@ export function useFile(filepath: Accessor<FilePath>) {
 }
 
 export function useFileContent(filepath: FilePath) {
-  return [
-    () => activeRepo.maybe()?.file(filepath).content,
-    (newContent: string) => {
-      const file = activeRepo.maybe()?.file(filepath);
-      if (file) file.content = newContent;
-    },
-  ] as const;
+  const file = useFile(() => filepath);
+
+  function getContent() {
+    return file()?.content;
+  }
+
+  function setContent(newContent: string) {
+    const current = file();
+    if (current) current.content = newContent;
+  }
+
+  return [getContent, setContent] as const;
 }
 
 export function executeFile<T = unknown>(filepath: FilePath) {
@@ -27,6 +32,7 @@ export function executeFile<T = unknown>(filepath: FilePath) {
 
   createEffect(async () => {
     const currentContent = content();
+    console.log('EXECUTE', filepath, currentContent);
     if (!currentContent) return setModule(null);
 
     const blob = new Blob([currentContent!], { type });

@@ -30,6 +30,10 @@ export class RepoFile {
   #module: unknown | null = null;
   #setContent: (content: FileContent | null) => void;
 
+  get isFetching() {
+    return this.#fetching != null;
+  }
+
   get content(): FileContent | null {
     const content = this.#content();
     if (content == null) this.fetchContent();
@@ -60,9 +64,9 @@ export class RepoFile {
 
     this.#fetching = getFileContent(this.path) as Promise<FileContent>;
     const content = await this.#fetching;
-
-    this.setDraft(content);
     this.#fetching = null;
+
+    this.content = content;
     return content;
   }
 
@@ -75,19 +79,13 @@ export class RepoFile {
     const prev = this.#content();
 
     try {
-      this.setDraft(content);
+      this.content = content;
       await mkdirRecursive(dirname(this.path));
       await writeFileContent(this.path, content);
       this.repo.fileChanged(this);
     } catch (e) {
-      this.setDraft(prev);
+      this.content = prev;
       throw e;
-    }
-  }
-
-  setDraft(content: FileContent | null) {
-    if (this.#content() == content) {
-      this.#setContent(content);
     }
   }
 
@@ -112,6 +110,6 @@ export class RepoFile {
 
   async remove() {
     await removeFile(this.path);
-    this.setDraft(null);
+    this.content = null;
   }
 }
