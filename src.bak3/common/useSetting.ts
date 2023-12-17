@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from 'solid-js';
+import { createResource } from 'solid-js';
 import { executeFile } from '../storage/executeFile';
 import { FilePath } from '../storage/types';
 
@@ -40,24 +40,19 @@ const DEFAULT_SETTINGS: Settings = {
 };
 
 const files = ['pensieve.js', 'pensieve.ts'].map(FilePath).map(executeFile);
-const [settings, setSettings] = createSignal<Partial<Settings>>({});
 
-createEffect(() => {
-  setSettings(
-    (() => {
-      for (const file of files) {
-        const mod = file();
-        if (mod) return mod;
-      }
+const [settings] = createResource<Partial<Settings>>(async () => {
+  for (const file of files) {
+    const mod = file();
+    if (mod) return mod;
+  }
 
-      return {};
-    })()
-  );
+  return {};
 });
 
 export function useSetting<Key extends keyof Settings>(key: Key) {
   return [
-    () => settings()[key] ?? DEFAULT_SETTINGS[key],
+    () => (settings() || {})[key] ?? DEFAULT_SETTINGS[key],
     (value: Settings[Key]) => {
       throw new Error('Are you nuts!?');
     },
